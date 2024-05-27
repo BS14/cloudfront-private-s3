@@ -10,10 +10,19 @@ from botocore.signers import CloudFrontSigner
 
 load_dotenv()  # takes enviroment variable from .env
 
+# Getting the values from .env
+load_dotenv()
+
+# Ensure all required environment variables are present
+required_env_vars = ['CF_URL', 'CF_PUBLIC_KEY_ID', 'CF_PRIVATE_KEY']
+for var_name in required_env_vars:
+    if not os.getenv(var_name):
+        raise ValueError(f"No {var_name} found in environment variables.")
 
 CF_PUBLIC_KEY_ID = os.getenv('CF_PUBLIC_KEY_ID')
 CF_URL = os.getenv('CF_URL')
 CF_PRIVATE_KEY = os.getenv('CF_PRIVATE_KEY')
+EXPIRES_AT = datetime.datetime.now() + datetime.timedelta(hours=1)
 
 
 def rsa_signer(message):
@@ -33,7 +42,7 @@ def rsa_signer(message):
     return private_key.sign(message, padding.PKCS1v15(), hashes.SHA1())
 
 
-expiry_date = datetime.datetime(2024, 5, 28)
+# expiry_date = datetime.datetime(2024, 5, 28)
 
 cloudfront_signer = CloudFrontSigner(CF_PUBLIC_KEY_ID, rsa_signer)
 
@@ -41,7 +50,7 @@ cloudfront_signer = CloudFrontSigner(CF_PUBLIC_KEY_ID, rsa_signer)
 object_url = f"{CF_URL}/pika.jpeg"
 
 signed_url = cloudfront_signer.generate_presigned_url(
-    object_url, date_less_than=expiry_date
+    object_url, date_less_than=EXPIRES_AT
 )
 
 

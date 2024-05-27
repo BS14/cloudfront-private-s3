@@ -14,6 +14,13 @@ from dotenv import load_dotenv
 # Getting the values from .env
 load_dotenv()
 
+# Ensure all required environment variables are present
+required_env_vars = ['CF_URL', 'CF_PUBLIC_KEY_ID', 'CF_PRIVATE_KEY']
+for var_name in required_env_vars:
+    if not os.getenv(var_name):
+        raise ValueError(f"No {var_name} found in environment variables.")
+
+
 CLOUDFRONT_RESOURCE = os.getenv('CF_URL')
 CLOUDFRONT_PUBLIC_KEY_ID = os.getenv('CF_PUBLIC_KEY_ID')
 CLOUDFRONT_PRIVATE_KEY = os.getenv('CF_PRIVATE_KEY')
